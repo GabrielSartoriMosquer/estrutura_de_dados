@@ -1,0 +1,5 @@
+struct Aluno {
+    char nome[50];
+    int idade;
+    float media;
+}

@@ -1,0 +1,161 @@
+import random
+
+class Carta:
+    def __init__(self, ataque, defesa, velocidade):
+        self.ataque = ataque
+        self.defesa = defesa
+        self.velocidade = velocidade
+
+def jogar_dado():
+
+    soma = 0
+    primeiro = random.randint(1,6)
+    segundo = random.randint(1,6)
+    soma = primeiro+segundo
+
+    return soma
+
+def criar_baralho():
+    cartas_p1 = []
+    cartas_p2 = []
+
+    for i in range(20):
+        carta = Carta(ataque=random.randint(1,6), defesa = random.randint(3,10), velocidade = random.randint(1,10))
+        if i%2 == 0:
+            cartas_p1.append(carta)
+        else:
+            cartas_p2.append(carta)
+    return cartas_p1, cartas_p2
+
+def criar_mao(baralho_p1, baralho_p2):
+    mao_p1 = []   
+    mao_p2 = []  
+    for i in range(4):
+        mao_p1.append(baralho_p1[random.randint(0,9)])
+        mao_p2.append(baralho_p2[random.randint(0,9)])
+    return mao_p1, mao_p2
+
+def batalha(baralho_p1, baralho_p2, mao_p1, mao_p2, indice_pop_p1, indice_pop_p2, pontos_p1, pontos_p2, turno):
+        print(f'PREPAREM-SE!\nA RODADA NÚMERO {turno} VAI COMEÇAR!\n')
+        print('PLAYER 1 X PLAYER 2')
+        pont_p1 = 0
+        pont_p2 = 0
+
+        dado_p1 = jogar_dado()
+        dado_p2 = jogar_dado()
+        print('\nJogando dado do player_1...')
+        print(f'O dado caiu em {dado_p1}')
+        print('\nJogando dado do player_2...')
+        print(f'O dado caiu em {dado_p2}\n')
+
+        print(f'DUELO DE ATAQUE \nplayer 1: {mao_p1[indice_pop_p1].ataque+dado_p1}\nplayer 2: {mao_p2[indice_pop_p2].ataque+dado_p2}')
+        duelo_ataque = (mao_p1[indice_pop_p1].ataque+dado_p1) - (mao_p2[indice_pop_p2].ataque+dado_p2)
+        if duelo_ataque < 0:
+            pont_p2+=1
+        else:
+            if duelo_ataque > 0:
+                pont_p1+=1
+            else:
+                pont_p1+=1
+                pont_p2+=1
+
+        print(f'DUELO DE DEFESA \nplayer 1: {mao_p1[indice_pop_p1].defesa+dado_p1}\nplayer 2: {mao_p2[indice_pop_p2].defesa+dado_p2}')
+        duelo_defesa = (mao_p1[indice_pop_p1].defesa+dado_p1) - (mao_p2[indice_pop_p2].defesa+dado_p2)
+        if duelo_defesa < 0:
+            pont_p2+=1
+        else:
+            if duelo_defesa > 0:
+                pont_p1+=1
+            else:
+                pont_p1+=1
+                pont_p2+=1
+
+        print(f'DUELO DE VELOCIDADE \nplayer 1: {mao_p1[indice_pop_p1].velocidade+dado_p1}\nplayer 2: {mao_p2[indice_pop_p2].velocidade+dado_p2}\n')
+        duelo_velocidade = (mao_p1[indice_pop_p1].velocidade+dado_p1) - (mao_p2[indice_pop_p2].velocidade+dado_p2)
+        if duelo_velocidade < 0:
+            pont_p2+=1
+        else:
+            if duelo_velocidade > 0:
+                pont_p1+=1
+            else:
+                pont_p1+=1
+                pont_p2+=1
+
+        if pont_p1 > pont_p2:
+            print('PLAYER_1 VENCEU A RODADA!\n')
+            pontos_p1+=1
+
+            mao_p2.pop(indice_pop_p2)
+            mao_p2.insert(indice_pop_p2-1, baralho_p2[0])
+            indice_pop_p2+=1
+
+            if indice_pop_p2 == len(mao_p2):
+                indice_pop_p2 = 0 
+
+            #print(f'Tamanho dos baralhos de cada jogador:\nPLAYER_1: {len(mao_p1)} cartas\nPLAYER_2: {len(mao_p2)} cartas\n')
+            print('-'*30+'\n')
+        else:
+            if pont_p1 < pont_p2:
+                print('PLAYER_2 VENCEU A RODADA!')
+                pontos_p2+=1
+
+                mao_p1.pop(indice_pop_p1)
+                mao_p1.insert(indice_pop_p1-1, baralho_p1[0])
+                indice_pop_p1+=1
+
+                if indice_pop_p1 == len(mao_p1):
+                    indice_pop_p1 = 0 
+
+                #print(f'Tamanho dos baralhos de cada jogador:\nPLAYER_1: {len(mao_p1)} cartas\nPLAYER_2: {len(mao_p2)} cartas\n')
+                print('-'*30+'\n')
+            else:
+                print('RODADA EMPATADA!')
+                pontos_p1+=0.5
+                pontos_p2+=0.5
+
+                mao_p1.pop(indice_pop_p1)
+                mao_p1.insert(indice_pop_p1-1, baralho_p1[0])
+                indice_pop_p1+=1
+
+                if indice_pop_p1 == len(mao_p1):
+                    indice_pop_p1 = 0 
+
+                mao_p2.pop(indice_pop_p2)
+                mao_p2.insert(indice_pop_p2-1, baralho_p2[0])
+                indice_pop_p2+=1
+
+                if indice_pop_p2 == len(mao_p2):
+                    indice_pop_p2 = 0 
+
+                #print(f'Tamanho dos baralhos de cada jogador:\nPLAYER_1: {len(mao_p1)} cartas\nPLAYER_2: {len(mao_p2)} cartas\n')
+                print('-'*30+'\n')
+
+        return indice_pop_p1, indice_pop_p2, pontos_p1, pontos_p2
+        
+#loop principal:
+baralho_p1, baralho_p2 = criar_baralho()
+mao_p1, mao_p2 = criar_mao(baralho_p1, baralho_p2)
+turno = 1
+i_pop_p1 = 0
+i_pop_p2 = 0
+pontuacao_p1 = 0
+pontuacao_p2 = 0
+
+while True:
+    if pontuacao_p1 < 10 and pontuacao_p2 < 10:
+        i_pop_p1, i_pop_p2, pontuacao_p1, pontuacao_p2 = batalha(baralho_p1, baralho_p2, mao_p1, mao_p2, i_pop_p1, i_pop_p2, pontuacao_p1, pontuacao_p2, turno)
+    else:
+        if pontuacao_p2 >= 10:
+            print('PARABÉNS!\nPLAYER_2, VOCÊ VENCEU!')
+            print(f'\nPontuação final:\nPLAYER_1: {pontuacao_p1}\nPLAYER_2: {pontuacao_p2}')
+            break
+        else:
+            if pontuacao_p1 >= 10:
+                print('PARABÉNS!\nPLAYER_1, VOCÊ VENCEU!')
+                print(f'\nPontuação final:\nPLAYER_1: {pontuacao_p1}\nPLAYER_2: {pontuacao_p2}')
+                break
+            else:
+                print('EMPATE!\nNINGUÉM PERDEU, NINGUÉM GANHOU.')
+                print(f'\nPontuação final:\nPLAYER_1: {pontuacao_p1}\nPLAYER_2: {pontuacao_p2}')
+                break
+    turno+=1

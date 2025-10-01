@@ -1,0 +1,136 @@
+import random
+
+class Carta:
+    def __init__(self, ataque, defesa):
+        self.ataque = ataque
+        self.defesa = defesa
+
+def jogar_dado():
+    soma = random.randint(1, 6) + random.randint(1, 6)
+    return soma
+
+def criar_baralho():
+    lista_1 = ['8, 2', '10, 5', '3, 8', '4, 9', '11, 7', 
+               '5, 12', '1, 10', '9, 4', '2, 11', '7, 1']
+    lista_2 = ['6, 11', '12, 1', '4, 7', '8, 2', '11, 3', 
+               '2, 10', '5, 12', '10, 4', '1, 5', '9, 3']
+
+    baralho_p1 = []
+    baralho_p2 = []
+
+    for valor in lista_1:
+        novo_valor = valor.split(',')
+        carta = Carta(defesa=int(novo_valor[0]), ataque=int(novo_valor[1]))
+        baralho_p1.append(carta)
+        
+    for valor in lista_2:
+        novo_valor = valor.split(',')
+        carta = Carta(defesa=int(novo_valor[0]), ataque=int(novo_valor[1]))
+        baralho_p2.append(carta)
+
+    return baralho_p1, baralho_p2
+
+def criar_mao(baralho_p1, baralho_p2):
+    mao_p1 = []   
+    mao_p2 = []   
+    for i in range(4):
+        mao_p1.append(random.choice(baralho_p1))
+        mao_p2.append(random.choice(baralho_p2))
+
+    with open('mao_p1.csv', 'w', encoding='utf-8') as arquivo:
+        arquivo.write('Ataque,Defesa\n')
+        for carta in mao_p1:
+            arquivo.write(f'{carta.ataque},{carta.defesa}\n')
+            
+    with open('mao_p2.csv', 'w', encoding='utf-8') as arquivo:
+        arquivo.write('Ataque,Defesa\n')
+        for carta in mao_p2:
+            arquivo.write(f'{carta.ataque},{carta.defesa}\n')
+            
+    return mao_p1, mao_p2
+
+def duelo(carta_p1, carta_p2, dado_p1, dado_p2):
+    
+    ataque_total_p1 = carta_p1.ataque + dado_p1
+    defesa_total_p2 = carta_p2.defesa + dado_p2
+
+    ataque_total_p2 = carta_p2.ataque + dado_p2
+    defesa_total_p1 = carta_p1.defesa + dado_p1
+    
+    print(f'DUELO\nPlayer 1 (Ataque Total: {ataque_total_p1}) vs Player 2 (Defesa Total: {defesa_total_p2})')
+    print(f'Player 2 (Ataque Total: {ataque_total_p2}) vs Player 1 (Defesa Total: {defesa_total_p1})\n')
+
+    p1_vence = ataque_total_p1 > defesa_total_p2
+    p2_vence = ataque_total_p2 > defesa_total_p1
+
+    if p1_vence and p2_vence:
+        return 'eliminacao_dupla'
+    elif p1_vence and not p2_vence:
+        return 'eliminacao_p2' 
+    elif not p1_vence and p2_vence:
+        return 'eliminacao_p1' 
+    else: 
+        return 'nenhuma_eliminacao'
+
+def batalha(mao_p1, mao_p2):
+
+    turno = 1
+
+    print('PREPAREM-SE!\nA PARTIDA IRÁ COMEÇAR!\n')
+    print('PLAYER 1 X PLAYER 2')
+
+    while mao_p1 and mao_p2: 
+        print(f'\n------------------\nRODADA NÚMERO {turno}\n------------------')
+        print(f'Cartas restantes P1: {len(mao_p1)} | Cartas restantes P2: {len(mao_p2)}')
+
+        carta_p1 = mao_p1[0]
+        carta_p2 = mao_p2[0]
+        
+        print(f'Player 1 usa: Ataque={carta_p1.ataque}, Defesa={carta_p1.defesa}')
+        print(f'Player 2 usa: Ataque={carta_p2.ataque}, Defesa={carta_p2.defesa}\n')
+
+        dado_p1 = jogar_dado()
+        dado_p2 = jogar_dado()
+        print('Jogando dado do Player 1...')
+        print(f'O dado caiu em {dado_p1}')
+        print('Jogando dado do Player 2...')
+        print(f'O dado caiu em {dado_p2}\n')
+        
+        resultado = duelo(carta_p1, carta_p2, dado_p1, dado_p2)
+        
+        if resultado == 'eliminacao_dupla':
+            print('Resultado: Ambas as cartas foram eliminadas!')
+            mao_p1.pop(0)
+            mao_p2.pop(0)
+        elif resultado == 'eliminacao_p1':
+            print('Resultado: A carta do PLAYER 1 foi eliminada!')
+            mao_p1.pop(0)
+        elif resultado == 'eliminacao_p2':
+            print('Resultado: A carta do PLAYER 2 foi eliminada!')
+            mao_p2.pop(0)
+        elif resultado == 'nenhuma_eliminacao':
+            print('Resultado: Nenhuma carta foi forte o suficiente. A rodada terminou em empate!')
+            mao_p1.pop(0)
+            mao_p2.pop(0)
+
+        turno += 1 
+        input("Pressione Enter para continuar para a próxima rodada...") 
+
+    print("\nFIM DE JOGO!")
+    if not mao_p1 and mao_p2:
+        print('PARABÉNS!\nPLAYER 2, VOCÊ VENCEU!')
+        return 'PLAYER_2'
+    elif not mao_p2 and mao_p1:
+        print('PARABÉNS!\nPLAYER 1, VOCÊ VENCEU!')
+        return 'PLAYER_1'
+    else:
+        print('O JOGO TERMINOU EM EMPATE!')
+        return 'EMPATE'
+
+turno = 1
+baralho_p1, baralho_p2 = criar_baralho()
+mao_p1, mao_p2 = criar_mao(baralho_p1, baralho_p2)
+
+vencedor = batalha(mao_p1, mao_p2)
+
+print(f'\nO grande vencedor é: {vencedor}')
